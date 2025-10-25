@@ -7,10 +7,11 @@ import PageContainer from '../components/PageContainer';
 import MonthlySummary from '../components/insights/MonthlySummary';
 import CompletedCard, { CompletedChallenge } from '../components/insights/CompletedCard';
 import InProgressCard, { InProgressChallenge } from '../components/insights/InProgressCard';
+import { BG_GRADIENT } from '../constants/layout';
 
 const MINT = '#66D8C9';
 const MINT_DEEP = '#4ECDC4';
-const BG_GRADIENT = ['#E6FFFA', '#FFFFFF', '#FFFFFF'];
+
 
 interface CompletedChallenge {
   title: string;

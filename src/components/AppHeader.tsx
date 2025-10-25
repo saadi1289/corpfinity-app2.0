@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { View, Image, StyleSheet, Text, Pressable, Animated } from 'react-native';
+import { View, StyleSheet, Text, Pressable, Animated } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { HEADER_HEIGHT, LOGO_WIDTH, LOGO_HEIGHT, H_PADDING } from '../constants/layout';
+import { HEADER_HEIGHT, H_PADDING, BG_GRADIENT } from '../constants/layout';
 import { LinearGradient } from 'expo-linear-gradient';
+import Logo from './Logo';
 
 // Brand-aligned color tokens (derived from existing app usage)
 const COLORS = {
@@ -99,7 +100,7 @@ const IconButton = ({
 export default function AppHeader({ onPressNotification, notificationCount = 0, showBack = false, onPressBack }: AppHeaderProps) {
   return (
     <LinearGradient
-      colors={[COLORS.white, '#F0FDFA']}
+      colors={BG_GRADIENT}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
       style={[styles.container, styles.floatingCard]}
@@ -112,7 +113,7 @@ export default function AppHeader({ onPressNotification, notificationCount = 0, 
             onPress={onPressBack}
           />
         )}
-        <Image source={require('../../assets/icon.png')} style={styles.logo} resizeMode="contain" />
+        <Logo size={40} style={styles.logo} />
       </View>
       <IconButton
         iconName="notifications-outline"
@@ -131,7 +132,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: H_PADDING,
-    // Removed plain white bar and bottom border to adopt floating style
+    // Remove backgroundColor since we're using LinearGradient
     // backgroundColor: COLORS.white,
     // borderBottomWidth: 1,
     // borderBottomColor: COLORS.border,
@@ -157,12 +158,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   logo: {
-    width: LOGO_WIDTH,
-    height: LOGO_HEIGHT,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: COLORS.white,
+    // Remove hardcoded dimensions and styling - Logo component handles this
   },
   // Icon button base styles
   iconBtnAnimated: {
@@ -211,7 +207,6 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
     lineHeight: 12,
-    // improved legibility
     letterSpacing: 0.2,
   },
 });

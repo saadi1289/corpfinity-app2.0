@@ -6,81 +6,82 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import PageContainer from '../components/PageContainer';
 import SettingsRow from '../components/profile/SettingsRow';
 import ProfileHeader from '../components/profile/ProfileHeader';
+import { BG_GRADIENT } from '../constants/layout';
 
 const MINT = '#66D8C9';
 const MINT_DEEP = '#4ECDC4';
 const MUTED = '#6B6B6B';
 const TEXT_DARK = '#1F2937';
-const BG_GRADIENT = ['#E6FFFA', '#FFFFFF', '#FFFFFF'];
-const DIVIDER = '#E5E7EB';
-const RED = '#EF4444';
 
-export default function Profile() {
-  const [hoveredRow, setHoveredRow] = useState<string | null>(null);
-  const [isDarkTheme, setIsDarkTheme] = useState(false);
+ const DIVIDER = '#E5E7EB';
+ const RED = '#EF4444';
 
-  const handleHover = (id: string, hovering: boolean) => {
-    setHoveredRow(hovering ? id : null);
-  };
+ export default function Profile() {
+   const [hoveredRow, setHoveredRow] = useState<string | null>(null);
+   const [isDarkTheme, setIsDarkTheme] = useState(false);
 
-  const onToggleTheme = (value: boolean) => {
-    setIsDarkTheme(value);
-    // TODO: Integrate with app-wide theme when available.
-  };
+   const handleHover = (id: string, hovering: boolean) => {
+     setHoveredRow(hovering ? id : null);
+   };
 
-  return (
+   const onToggleTheme = (value: boolean) => {
+     setIsDarkTheme(value);
+     // TODO: Integrate with app-wide theme when available.
+   };
+
+   return (
     <LinearGradient colors={BG_GRADIENT} style={styles.container}>
-      <PageContainer>
-        <View style={styles.content}>
-          {/* Header / Avatar */}
-          <ProfileHeader initials="AJ" name="Alex Johnson" role="Employee" />
+       <PageContainer>
+         <View style={styles.content}>
+           {/* Header / Avatar */}
+           <ProfileHeader initials="AJ" name="Alex Johnson" role="Employee" />
 
-          {/* Settings Card */}
-          <View style={styles.card}>
-            <SettingsRow id="edit" icon="create-outline" label="Edit Profile" onPress={() => {}} />
-            <View style={styles.divider} />
+           {/* Settings Card */}
+           <View style={styles.card}>
+             <SettingsRow id="edit" icon="create-outline" label="Edit Profile" onPress={() => {}} />
+             <View style={styles.divider} />
 
-            <SettingsRow
-              id="notifications"
-              icon="notifications-outline"
-              label="Notification Preferences"
-              onPress={() => {}}
-            />
-            <View style={styles.divider} />
+             <SettingsRow
+               id="notifications"
+               icon="notifications-outline"
+               label="Notification Preferences"
+               onPress={() => {}}
+             />
+             <View style={styles.divider} />
 
-            <SettingsRow
-              id="theme"
-              icon="color-palette-outline"
-              label="App Theme"
-              rightElement={
-                <View style={styles.toggleContainer}>
-                  <Text style={[styles.toggleLabel, isDarkTheme ? styles.toggleLabelActive : null]}>
-                    {isDarkTheme ? 'Dark' : 'Light'}
-                  </Text>
-                  <Switch
-                    value={isDarkTheme}
-                    onValueChange={onToggleTheme}
-                    trackColor={{ false: '#D1FAE5', true: MINT }}
-                    thumbColor="#FFFFFF"
-                  />
-                </View>
-              }
-            />
-            <View style={styles.divider} />
+             <SettingsRow
+               id="theme"
+               icon="color-palette-outline"
+               label="App Theme"
+               rightElement={
+                 <View style={styles.toggleContainer}>
+                   <Text style={[styles.toggleLabel, isDarkTheme ? styles.toggleLabelActive : null]}>
+                     {isDarkTheme ? 'Dark' : 'Light'}
+                   </Text>
+                   <Switch
+                     value={isDarkTheme}
+                     onValueChange={onToggleTheme}
+                     trackColor={{ false: '#D1FAE5', true: MINT }}
+                     thumbColor="#FFFFFF"
+                   />
+                 </View>
+               }
+             />
+             <View style={styles.divider} />
 
-            <SettingsRow id="privacy" icon="lock-closed-outline" label="Privacy & Security" onPress={() => {}} />
-            <View style={styles.divider} />
+             <SettingsRow id="privacy" icon="lock-closed-outline" label="Privacy & Security" onPress={() => {}} />
+             <View style={styles.divider} />
 
-            <SettingsRow id="help" icon="help-circle-outline" label="Help & Feedback" onPress={() => {}} />
-            <View style={styles.divider} />
+             <SettingsRow id="help" icon="help-circle-outline" label="Help & Feedback" onPress={() => {}} />
+             <View style={styles.divider} />
 
-            <SettingsRow id="logout" icon="log-out-outline" label="Log Out" variant="destructive" onPress={() => {}} />
-          </View>
-        </View>
-      </PageContainer>
-    </LinearGradient>
-  );
-}
+             <SettingsRow id="logout" icon="log-out-outline" label="Log Out" variant="destructive" onPress={() => {}} />
+           </View>
+         </View>
+       </PageContainer>
+     </LinearGradient>
+   );
+ }
 
 const AVATAR_SIZE = 100;
 

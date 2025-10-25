@@ -7,6 +7,7 @@ import ChallengeDetailsList from '../components/ChallengeDetailsList';
 import useChallengeTimer from '../components/useChallengeTimer';
 import ChallengeTimer from '../components/ChallengeTimer';
 import ChallengeActionButtons from '../components/ChallengeActionButtons';
+import { BG_GRADIENT } from '../constants/layout';
 
 interface ChallengeRouteParams {
   title?: string;
@@ -50,7 +51,7 @@ export default function Challenges({ navigation, route }: any) {
   ];
 
   return (
-    <LinearGradient colors={['#E6FFFA', '#FFFFFF']} style={styles.container}>
+    <LinearGradient colors={BG_GRADIENT} style={styles.container}>
       <PageContainer showBack onPressBack={() => navigation?.goBack?.()}>
         <ChallengeHeader title={title} />
 

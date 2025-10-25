@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Animated,
   Pressable,
+  Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
@@ -18,7 +19,7 @@ import EnergyCard from '../components/EnergyCard';
 import LocationCard from '../components/LocationCard';
 import TimeCapsule from '../components/TimeCapsule';
 import WellnessGoalCard from '../components/WellnessGoalCard';
-import { SECTION_SPACING } from '../constants/layout';
+import { SECTION_SPACING, BG_GRADIENT } from '../constants/layout';
 type EnergyLevel = 'low' | 'medium' | 'high' | null;
 type Location = 'office' | 'gym' | 'outdoor' | 'home' | null;
 type TimeOption = '5' | '10' | '15' | '30' | null;
@@ -103,224 +104,248 @@ const Homepage: React.FC<HomepageProps> = ({ navigation }) => {
 
   // WellnessGoalCard moved to src/components/WellnessGoalCard.tsx
 
+  // Hardware-accelerated entry animation on mount (native driver)
+  const screenOpacity = useRef(new Animated.Value(0)).current;
+  const screenTranslateY = useRef(new Animated.Value(8)).current;
+
+  useEffect(() => {
+    const ease = Easing.bezier(0.22, 1, 0.36, 1); // natural ease-out
+    Animated.parallel([
+      Animated.timing(screenOpacity, {
+        toValue: 1,
+        duration: 600,
+        easing: ease,
+        useNativeDriver: true,
+      }),
+      Animated.timing(screenTranslateY, {
+        toValue: 0,
+        duration: 600,
+        easing: ease,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [screenOpacity, screenTranslateY]);
+
   return (
-    <LinearGradient
-      colors={['#E6FFFA', '#FFFFFF', '#FFFFFF']}
-      style={styles.container}
-    >
-      <PageContainer>
-        <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: bottomPadding }} showsVerticalScrollIndicator={false}>
-          {/* Hero Section */}
-          <Animatable.View animation="fadeInUp" duration={800} style={styles.heroSection}>
-            <Text style={styles.greeting}>Welcome back, Sarah!</Text>
-            <Text style={styles.subGreeting}>How are you feeling today?</Text>
-          </Animatable.View>
+    <Animated.View style={{ flex: 1, opacity: screenOpacity, transform: [{ translateY: screenTranslateY }] }}>
+      <LinearGradient
+        colors={BG_GRADIENT}
+          style={styles.container}
+        >
+        <PageContainer>
+          <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: bottomPadding }} showsVerticalScrollIndicator={false}>
+            {/* Hero Section */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} style={styles.heroSection}>
+              <Text style={styles.greeting}>Welcome back, Sarah!</Text>
+              <Text style={styles.subGreeting}>How are you feeling today?</Text>
+            </Animatable.View>
 
-          {/* Energy Level Selection */}
-          <Animatable.View animation="fadeInUp" duration={800} delay={200} style={styles.section}>
-            <Text style={styles.sectionTitle}>How's your energy today?</Text>
-            <View style={styles.energyContainer}>
-              <EnergyCard
-                level="Low"
-                icon="battery-dead-outline"
-                isSelected={selectedEnergy === 'low'}
-                onPress={() => setSelectedEnergy('low')}
-              />
-              <EnergyCard
-                level="Medium"
-                icon="battery-half-outline"
-                isSelected={selectedEnergy === 'medium'}
-                onPress={() => setSelectedEnergy('medium')}
-              />
-              <EnergyCard
-                level="High"
-                icon="battery-full-outline"
-                isSelected={selectedEnergy === 'high'}
-                onPress={() => setSelectedEnergy('high')}
-              />
-            </View>
-          </Animatable.View>
-
-          {/* Location Selection */}
-          <Animatable.View animation="fadeInUp" duration={800} delay={400} style={styles.section}>
-            <Text style={styles.sectionTitle}>Where are you today?</Text>
-            <View style={styles.locationContainer}>
-              <LocationCard
-                location="Office"
-                icon="business-outline"
-                iconFamily="Ionicons"
-                isSelected={selectedLocation === 'office'}
-                onPress={() => setSelectedLocation('office')}
-              />
-              <LocationCard
-                location="Gym"
-                icon="fitness-center"
-                iconFamily="MaterialIcons"
-                isSelected={selectedLocation === 'gym'}
-                onPress={() => setSelectedLocation('gym')}
-              />
-              <LocationCard
-                location="Outdoor"
-                icon="leaf-outline"
-                iconFamily="Ionicons"
-                isSelected={selectedLocation === 'outdoor'}
-                onPress={() => setSelectedLocation('outdoor')}
-              />
-              <LocationCard
-                location="Home"
-                icon="home-outline"
-                iconFamily="Ionicons"
-                isSelected={selectedLocation === 'home'}
-                onPress={() => setSelectedLocation('home')}
-              />
-            </View>
-          </Animatable.View>
-
-          {/* Time Selection */}
-          <Animatable.View animation="fadeInUp" duration={800} delay={600} style={styles.section}>
-            <Text style={styles.sectionTitle}>How much time do you have?</Text>
-            <View style={styles.timeGridContainer}>
-              <TimeCapsule
-                time="5"
-                isSelected={selectedTime === '5'}
-                onPress={() => setSelectedTime('5')}
-              />
-              <TimeCapsule
-                time="10"
-                isSelected={selectedTime === '10'}
-                onPress={() => setSelectedTime('10')}
-              />
-              <TimeCapsule
-                time="15"
-                isSelected={selectedTime === '15'}
-                onPress={() => setSelectedTime('15')}
-              />
-              <TimeCapsule
-                time="30"
-                isSelected={selectedTime === '30'}
-                onPress={() => setSelectedTime('30')}
-              />
-            </View>
-          </Animatable.View>
-
-          {/* Wellness Goals Selection */}
-          <Animatable.View animation="fadeInUp" duration={800} delay={800} style={styles.section}>
-            <Text style={styles.sectionTitle}>Choose your wellness goal</Text>
-            <View style={styles.goalsContainer}>
-              <WellnessGoalCard
-                goal="Stress Reduction"
-                icon="shield-checkmark-outline"
-                iconFamily="Ionicons"
-                color="#F87171"
-                isSelected={selectedGoal === 'stress'}
-                onPress={() => setSelectedGoal('stress')}
-              />
-              <WellnessGoalCard
-                goal="Better Sleep"
-                icon="moon-outline"
-                iconFamily="Ionicons"
-                color="#A78BFA"
-                isSelected={selectedGoal === 'sleep'}
-                onPress={() => setSelectedGoal('sleep')}
-              />
-              <WellnessGoalCard
-                goal="Focus Boost"
-                icon="eye-outline"
-                iconFamily="Ionicons"
-                color="#FBBF24"
-                isSelected={selectedGoal === 'focus'}
-                onPress={() => setSelectedGoal('focus')}
-              />
-              <WellnessGoalCard
-                goal="Calm Mind"
-                icon="leaf-outline"
-                iconFamily="Ionicons"
-                color="#34D399"
-                isSelected={selectedGoal === 'calm'}
-                onPress={() => setSelectedGoal('calm')}
-              />
-              <WellnessGoalCard
-                goal="Productivity"
-                icon="trending-up-outline"
-                iconFamily="Ionicons"
-                color="#FB7185"
-                isSelected={selectedGoal === 'productivity'}
-                onPress={() => setSelectedGoal('productivity')}
-              />
-              <WellnessGoalCard
-                goal="Physical Activity"
-                icon="fitness-outline"
-                iconFamily="Ionicons"
-                color="#60A5FA"
-                isSelected={selectedGoal === 'physical'}
-                onPress={() => setSelectedGoal('physical')}
-              />
-            </View>
-          </Animatable.View>
-
-          {/* Suggest Challenge Button */}
-          <Animatable.View animation="fadeInUp" duration={800} delay={1000} style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[
-                styles.suggestButton,
-                isAllSelected ? styles.activeButton : styles.inactiveButton
-              ]}
-              onPress={handleSuggestChallenge}
-              disabled={!isAllSelected}
-              accessibilityLabel="Suggest Challenge"
-              accessibilityRole="button"
-            >
-              <Text style={[
-                styles.buttonText,
-                isAllSelected ? styles.activeButtonText : styles.inactiveButtonText
-              ]}>
-                Suggest Challenge
-              </Text>
-            </TouchableOpacity>
-          </Animatable.View>
-
-          {/* Challenge Suggestion Box */}
-          {suggestedChallenge && (
-            <Animatable.View animation="fadeIn" duration={600} style={styles.challengeContainer}>
-              <View style={styles.challengeBox}>
-                <Text style={styles.challengeTitle}>{suggestedChallenge.title}</Text>
-                <Text style={styles.challengeDescription}>{suggestedChallenge.description}</Text>
-                <Text style={styles.challengeDuration}>Duration: {suggestedChallenge.duration}</Text>
-                
-                <View style={styles.activitiesContainer}>
-                  {suggestedChallenge.activities.map((activity, index) => (
-                    <View key={index} style={styles.activityItem}>
-                      <Text style={styles.bulletPoint}>•</Text>
-                      <Text style={styles.activityText}>{activity}</Text>
-                    </View>
-                  ))}
-                </View>
-
-                <View style={styles.challengeButtons}>
-                  <TouchableOpacity
-                    style={styles.resuggestButton}
-                    onPress={handleResuggest}
-                    accessibilityLabel="Resuggest Challenge"
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.resuggestButtonText}>Resuggest </Text>
-                  </TouchableOpacity>
-                  
-                  <TouchableOpacity
-                    style={styles.startButton}
-                    onPress={handleStartChallenge}
-                    accessibilityLabel="Start Challenge"
-                    accessibilityRole="button"
-                  >
-                    <Text style={styles.startButtonText}>Start </Text>
-                  </TouchableOpacity>
-                </View>
+            {/* Energy Level Selection */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} delay={200} style={styles.section}>
+              <Text style={styles.sectionTitle}>How's your energy today?</Text>
+              <View style={styles.energyContainer}>
+                <EnergyCard
+                  level="Low"
+                  icon="battery-dead-outline"
+                  isSelected={selectedEnergy === 'low'}
+                  onPress={() => setSelectedEnergy('low')}
+                />
+                <EnergyCard
+                  level="Medium"
+                  icon="battery-half-outline"
+                  isSelected={selectedEnergy === 'medium'}
+                  onPress={() => setSelectedEnergy('medium')}
+                />
+                <EnergyCard
+                  level="High"
+                  icon="battery-full-outline"
+                  isSelected={selectedEnergy === 'high'}
+                  onPress={() => setSelectedEnergy('high')}
+                />
               </View>
             </Animatable.View>
-          )}
-        </ScrollView>
-      </PageContainer>
-    </LinearGradient>
+
+            {/* Location Selection */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} delay={400} style={styles.section}>
+              <Text style={styles.sectionTitle}>Where are you today?</Text>
+              <View style={styles.locationContainer}>
+                <LocationCard
+                  location="Office"
+                  icon="business-outline"
+                  iconFamily="Ionicons"
+                  isSelected={selectedLocation === 'office'}
+                  onPress={() => setSelectedLocation('office')}
+                />
+                <LocationCard
+                  location="Gym"
+                  icon="fitness-center"
+                  iconFamily="MaterialIcons"
+                  isSelected={selectedLocation === 'gym'}
+                  onPress={() => setSelectedLocation('gym')}
+                />
+                <LocationCard
+                  location="Outdoor"
+                  icon="leaf-outline"
+                  iconFamily="Ionicons"
+                  isSelected={selectedLocation === 'outdoor'}
+                  onPress={() => setSelectedLocation('outdoor')}
+                />
+                <LocationCard
+                  location="Home"
+                  icon="home-outline"
+                  iconFamily="Ionicons"
+                  isSelected={selectedLocation === 'home'}
+                  onPress={() => setSelectedLocation('home')}
+                />
+              </View>
+            </Animatable.View>
+
+            {/* Time Selection */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} delay={600} style={styles.section}>
+              <Text style={styles.sectionTitle}>How much time do you have?</Text>
+              <View style={styles.timeGridContainer}>
+                <TimeCapsule
+                  time="5"
+                  isSelected={selectedTime === '5'}
+                  onPress={() => setSelectedTime('5')}
+                />
+                <TimeCapsule
+                  time="10"
+                  isSelected={selectedTime === '10'}
+                  onPress={() => setSelectedTime('10')}
+                />
+                <TimeCapsule
+                  time="15"
+                  isSelected={selectedTime === '15'}
+                  onPress={() => setSelectedTime('15')}
+                />
+                <TimeCapsule
+                  time="30"
+                  isSelected={selectedTime === '30'}
+                  onPress={() => setSelectedTime('30')}
+                />
+              </View>
+            </Animatable.View>
+
+            {/* Wellness Goals Selection */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} delay={800} style={styles.section}>
+              <Text style={styles.sectionTitle}>Choose your wellness goal</Text>
+              <View style={styles.goalsContainer}>
+                <WellnessGoalCard
+                  goal="Stress Reduction"
+                  icon="shield-checkmark-outline"
+                  iconFamily="Ionicons"
+                  color="#F87171"
+                  isSelected={selectedGoal === 'stress'}
+                  onPress={() => setSelectedGoal('stress')}
+                />
+                <WellnessGoalCard
+                  goal="Better Sleep"
+                  icon="moon-outline"
+                  iconFamily="Ionicons"
+                  color="#A78BFA"
+                  isSelected={selectedGoal === 'sleep'}
+                  onPress={() => setSelectedGoal('sleep')}
+                />
+                <WellnessGoalCard
+                  goal="Focus Boost"
+                  icon="eye-outline"
+                  iconFamily="Ionicons"
+                  color="#FBBF24"
+                  isSelected={selectedGoal === 'focus'}
+                  onPress={() => setSelectedGoal('focus')}
+                />
+                <WellnessGoalCard
+                  goal="Calm Mind"
+                  icon="leaf-outline"
+                  iconFamily="Ionicons"
+                  color="#34D399"
+                  isSelected={selectedGoal === 'calm'}
+                  onPress={() => setSelectedGoal('calm')}
+                />
+                <WellnessGoalCard
+                  goal="Productivity"
+                  icon="trending-up-outline"
+                  iconFamily="Ionicons"
+                  color="#FB7185"
+                  isSelected={selectedGoal === 'productivity'}
+                  onPress={() => setSelectedGoal('productivity')}
+                />
+                <WellnessGoalCard
+                  goal="Physical Activity"
+                  icon="fitness-outline"
+                  iconFamily="Ionicons"
+                  color="#60A5FA"
+                  isSelected={selectedGoal === 'physical'}
+                  onPress={() => setSelectedGoal('physical')}
+                />
+              </View>
+            </Animatable.View>
+
+            {/* Suggest Challenge Button */}
+            <Animatable.View useNativeDriver animation="fadeInUp" duration={800} delay={1000} style={styles.buttonContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.suggestButton,
+                  isAllSelected ? styles.activeButton : styles.inactiveButton
+                ]}
+                onPress={handleSuggestChallenge}
+                disabled={!isAllSelected}
+                accessibilityLabel="Suggest Challenge"
+                accessibilityRole="button"
+              >
+                <Text style={[
+                  styles.buttonText,
+                  isAllSelected ? styles.activeButtonText : styles.inactiveButtonText
+                ]}>
+                  Suggest Challenge
+                </Text>
+              </TouchableOpacity>
+            </Animatable.View>
+
+            {/* Challenge Suggestion Box */}
+            {suggestedChallenge && (
+              <Animatable.View useNativeDriver animation="fadeIn" duration={600} style={styles.challengeContainer}>
+                <View style={styles.challengeBox}>
+                  <Text style={styles.challengeTitle}>{suggestedChallenge.title}</Text>
+                  <Text style={styles.challengeDescription}>{suggestedChallenge.description}</Text>
+                  <Text style={styles.challengeDuration}>Duration: {suggestedChallenge.duration}</Text>
+                  
+                  <View style={styles.activitiesContainer}>
+                    {suggestedChallenge.activities.map((activity, index) => (
+                      <View key={index} style={styles.activityItem}>
+                        <Text style={styles.bulletPoint}>•</Text>
+                        <Text style={styles.activityText}>{activity}</Text>
+                      </View>
+                    ))}
+                  </View>
+
+                  <View style={styles.challengeButtons}>
+                    <TouchableOpacity
+                      style={styles.resuggestButton}
+                      onPress={handleResuggest}
+                      accessibilityLabel="Resuggest Challenge"
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.resuggestButtonText}>Resuggest </Text>
+                    </TouchableOpacity>
+                    
+                    <TouchableOpacity
+                      style={styles.startButton}
+                      onPress={handleStartChallenge}
+                      accessibilityLabel="Start Challenge"
+                      accessibilityRole="button"
+                    >
+                      <Text style={styles.startButtonText}>Start </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </Animatable.View>
+            )}
+          </ScrollView>
+        </PageContainer>
+      </LinearGradient>
+    </Animated.View>
   );
 };
 
@@ -587,23 +612,17 @@ const styles = StyleSheet.create({
     marginBottom: SECTION_SPACING,
     position: 'relative',
     zIndex: 20,
+    alignItems: 'center',
   },
   suggestButton: {
-    width: '100%',
+    width: '91%',
     paddingVertical: 16,
     borderRadius: 16,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 8,
     zIndex: 20,
   },
   activeButton: {
     backgroundColor: '#66D8C9',
-    shadowColor: '#66D8C9',
-    shadowOpacity: 0.3,
   },
   inactiveButton: {
     backgroundColor: '#F3F4F6',
@@ -621,17 +640,13 @@ const styles = StyleSheet.create({
   challengeContainer: {
     paddingHorizontal: 0, // Removed horizontal padding to match other sections width
     marginBottom: SECTION_SPACING,
+    alignItems: 'center',
   },
   challengeBox: {
-    width: '100%',
+    width: '91%',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
     borderWidth: 2,
     borderColor: '#F1F5F9',
     marginBottom: 16,
